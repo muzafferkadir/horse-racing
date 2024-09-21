@@ -4,7 +4,7 @@
       <div class="bg-gray-100 rounded px-6 py-3 text-lg font-semibold">PROGRAM</div>
       <div class="bg-gray-100 rounded px-6 py-3 text-lg font-semibold">RESULTS</div>
     </div>
-    <div v-for="(round, index) in 6" class="mb-5">
+    <div :key="index" v-for="(round, index) in 6" class="mb-5">
       <div class="bg-gray-100 rounded px-6 py-2 font-semibold text-center">
         {{ index + 1 }}ST LAP(1200M)
       </div>
@@ -17,7 +17,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="horse in 3" class="border-b border-gray-100 rounded text-xs">
+            <tr
+              :key="index"
+              v-for="(horse, index) in 10"
+              class="border-b border-gray-100 rounded text-xs"
+            >
               <td class="p-2 pl-6">1</td>
               <td class="p-2">HORSENAME</td>
             </tr>
@@ -31,7 +35,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="horse in 3" class="border-b border-gray-100 rounded text-xs">
+            <tr
+              :key="index"
+              v-for="(horse, index) in 10"
+              class="border-b border-gray-100 rounded text-xs"
+            >
               <td class="p-2 pl-6">1</td>
               <td class="p-2">HORSENAME</td>
             </tr>
