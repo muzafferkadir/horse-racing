@@ -1,13 +1,13 @@
 <template>
   <div class="w-[500px]">
     <div class="sticky top-5">
-      <div class="max-h-max flex flex-col sticky">
+      <div class="max-h-max flex flex-col sticky mb-3">
         <div
           class="absolute top-0 bottom-0 right-8 w-1 border-l border-dashed border-primary-500"
         ></div>
         <div
-          v-for="(racer, index) in racers"
-          :key="racer.id"
+          v-for="(horse, index) in currentRace.participants"
+          :key="horse.id"
           class="flex items-center w-full h-12 border border-t border-dashed border-gray-200"
         >
           <div
@@ -18,25 +18,20 @@
           <div class="flex-1 relative h-full">
             <div
               class="absolute top-1/2 -translate-y-1/2 flex items-center"
-              :style="{ transform: `translateX(${getRacerPosition(racer)}px)`, color: racer.color }"
+              :style="{ transform: `translateX(${getHorsePosition(horse)}px)`, color: horse.color }"
             >
-              <IconHorse :color="racer.color" />
+              <IconHorse :color="horse.color" />
             </div>
           </div>
         </div>
       </div>
-      <div class="flex rounded-md mt-3 justify-center bg-gray-100">
+      <div
+        v-if="currentRace?.participants?.length"
+        class="flex rounded-md justify-center bg-gray-100"
+      >
         <div class="py-3 px-6 text-sm font-semibold">
-          {{ currentRound.name }} ({{ currentRound.distance }}M)
+          {{ currentRace.name }} ({{ currentRace.distance }}M)
         </div>
-      </div>
-      <div v-if="roundResults.length > 0" class="mt-3">
-        <h3 class="font-bold">Round Results:</h3>
-        <ul>
-          <li v-for="(result, index) in roundResults" :key="index">
-            Round {{ index + 1 }}: 1st: {{ result[0] }}, 2nd: {{ result[1] }}, 3rd: {{ result[2] }}
-          </li>
-        </ul>
       </div>
     </div>
   </div>
@@ -44,114 +39,92 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { mapState, mapMutations } from 'vuex'
 import IconHorse from './icons/IconHorse.vue'
-import type { PropType } from 'vue'
-
-interface Round {
-  name: string
-  distance: number
-}
-
-interface Racer {
-  id: number
-  name: string
-  color: string
-  condition: number
-  speed: number
-  distance: number
-  finished: boolean
-}
-
-interface HorseRacingProgram {
-  rounds: Round[]
-  racers: Racer[]
-}
 
 export default defineComponent({
   components: {
     IconHorse
   },
-  props: {
-    program: {
-      type: Object as PropType<HorseRacingProgram>,
-      required: true
-    }
-  },
   data() {
     return {
-      racers: [] as Racer[],
-      currentRoundIndex: 0,
       trackWidth: 400,
-      isRacing: false,
-      finishedRacers: 0,
-      roundResults: [] as number[][]
+      racePositions: {} as { [key: number]: number }
     }
   },
   computed: {
-    currentRound(): Round {
-      return this.program.rounds[this.currentRoundIndex]
+    ...mapState(['horses', 'races', 'results', 'isRacing', 'currentRaceId', 'programStarted']),
+    currentRace() {
+      return (
+        this.races.find((race) => race.id === this.currentRaceId) || {
+          participants: [],
+          distance: 0
+        }
+      )
+    },
+    raceResults() {
+      return this.results.filter((result) => result.raceId === this.currentRaceId)
     }
   },
-  mounted() {
-    this.initializeRacers()
-    this.startRace()
+  watch: {
+    isRacing(newValue) {
+      if (newValue) {
+        this.startRace()
+      }
+    }
   },
   methods: {
-    initializeRacers() {
-      this.racers = this.program.racers.map((racer) => ({
-        ...racer,
-        distance: 0,
-        finished: false
-      }))
-    },
+    ...mapMutations(['setIsRacing', 'addResult']),
+
     startRace() {
-      this.isRacing = true
+      this.racePositions = {}
+      this.currentRace.participants.forEach((horse) => {
+        this.racePositions[horse.id] = 0
+      })
       this.animateRace()
     },
+
     animateRace() {
       if (!this.isRacing) return
 
-      this.racers.forEach((racer) => {
-        if (racer.finished) return
-
-        const speedReduction = Math.max(0, (100 - racer.condition) / 100) * 0.1
-        const currentSpeed = Math.max(50, racer.speed * (1 - speedReduction))
-        racer.distance += currentSpeed / 60
-
-        if (racer.distance >= this.currentRound.distance) {
-          racer.distance = this.currentRound.distance
-          racer.finished = true
-          this.finishedRacers++
+      let allFinished = true
+      this.currentRace.participants.forEach((horse) => {
+        if (this.racePositions[horse.id] < this.currentRace.distance) {
+          const speedReduction = Math.max(0, (100 - horse.condition) / 100) * 0.1
+          const speed = Math.random() * 10 + 5 // Random speed between 5 and 15
+          this.racePositions[horse.id] += speed * (1 - speedReduction)
+          allFinished = false
         }
       })
 
-      if (this.finishedRacers === this.racers.length) {
-        this.finishRound()
+      if (allFinished) {
+        this.finishRace()
       } else {
         requestAnimationFrame(this.animateRace)
       }
     },
-    finishRound() {
-      const sortedRacers = [...this.racers].sort((a, b) => b.distance - a.distance)
-      this.roundResults.push(sortedRacers.slice(0, 3).map((racer) => racer.id))
 
-      if (this.currentRoundIndex < this.program.rounds.length - 1) {
-        this.currentRoundIndex++
-        this.resetRacersForNextRound()
-        this.startRace()
-      } else {
-        this.isRacing = false
-      }
-    },
-    resetRacersForNextRound() {
-      this.racers.forEach((racer) => {
-        racer.distance = 0
-        racer.finished = false
+    finishRace() {
+      const sortedHorses = Object.entries(this.racePositions)
+        .sort(([, a], [, b]) => b - a)
+        .map(([id]) => parseInt(id))
+
+      this.addResult({
+        raceId: this.currentRaceId,
+        positions: sortedHorses.map((horseId, index) => ({ horseId, position: index + 1 }))
       })
-      this.finishedRacers = 0
+      // this.setIsRacing(false)
     },
-    getRacerPosition(racer: Racer) {
-      return (racer.distance / this.currentRound.distance) * this.trackWidth
+
+    getHorsePosition(horse: { id: number }) {
+      return (
+        ((this.racePositions[horse.id] || 0) / (this.currentRace.distance || 1)) * this.trackWidth
+      )
+    },
+
+    getHorseName(horseId: number) {
+      const horse = this.horses.find((h) => h.id === horseId)
+      return horse ? horse.name : 'Unknown'
     }
   }
 })

@@ -26,6 +26,7 @@ interface State {
   isRacing: boolean;
   currentRaceId: number | null;
   isGenerated: boolean;
+  programStarted: boolean;
 }
 
 const horseNames = [
@@ -34,8 +35,8 @@ const horseNames = [
 ];
 
 const horseColors = [
-  '#160404', '#260402', '#380400', '#470700', '#570C00', '#661100', '#751700', '#851F00', '#942700', '#A33100',
-  '#B33B00', '#C24700', '#D15400', '#E06100', '#F07000', '#FF8000', '#FF8F0F', '#FF9E1F', '#FFAB2E', '#FFB83D'
+  '#160404', '#2a2a2a', '#5d3a37', '#4d4d4d', '#570C00', '#979797', '#751700', '#836969', '#942700', '#A33100',
+  '#B33B00', '#c27b00', '#D15400', '#76541e', '#F07000', '#dcbf1e', '#cac7c3', '#efe55e', '#FFAB2E', '#ffa304'
 ];
 
 const raceLengths = [1200, 1400, 1600, 1800, 2000, 2200];
@@ -48,6 +49,7 @@ const store = createStore<State>({
     isRacing: false,
     currentRaceId: null,
     isGenerated: false,
+    programStarted: false,
   },
   mutations: {
     setHorses(state, horses: Horse[]) {
@@ -80,6 +82,10 @@ const store = createStore<State>({
 
     setIsGenerated(state, isGenerated: boolean) {
       state.isGenerated = isGenerated;
+    },
+
+    setProgramStarted(state, programStarted: boolean) {
+      state.programStarted = programStarted;
     }
   },
   actions: {
@@ -101,6 +107,7 @@ const store = createStore<State>({
       commit('setResults', []);
       commit('setIsRacing', false);
       commit('setCurrentRaceId', null);
+      commit('setProgramStarted', false);
 
       dispatch('initializeHorses');
 
@@ -121,21 +128,23 @@ const store = createStore<State>({
         commit('addRace', race);
         commit('setIsGenerated', true);
       });
+
+      if (!state.currentRaceId && state.races.length > 0) {
+        commit('setCurrentRaceId', state.races[0].id);
+      }
     },
 
-    startRace({ commit }, raceId: number) {
+    startProgram({ commit, state }) {
+      if (!state.isGenerated) {
+        return;
+      }
+
+      if (!state.currentRaceId && state.races.length > 0) {
+        commit('setCurrentRaceId', state.races[0].id);
+      }
+
+      commit('setProgramStarted', true);
       commit('setIsRacing', true);
-      commit('setCurrentRaceId', raceId);
-    },
-
-    endRace({ commit, state }, positions: { horseId: number; position: number }[]) {
-      const result: RaceResult = {
-        raceId: state.currentRaceId!,
-        positions,
-      };
-      commit('addResult', result);
-      commit('setIsRacing', false);
-      commit('setCurrentRaceId', null);
     },
   },
   getters: {

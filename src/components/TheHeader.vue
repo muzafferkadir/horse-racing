@@ -38,6 +38,11 @@ export default defineComponent({
     }
 
     const toggleRacing = () => {
+      if (!store.state.programStarted) {
+        store.dispatch('startProgram')
+        return
+      }
+
       store.commit('setIsRacing', !store.state.isRacing)
     }
 
