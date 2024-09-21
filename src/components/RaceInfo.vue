@@ -36,12 +36,12 @@
           </thead>
           <tbody>
             <tr
-              :key="result.horseId"
-              v-for="(result, resultIndex) in getRaceResults(race.id)"
+              v-for="position in getRaceResults(race.id)"
+              :key="position.horseId"
               class="border-b border-gray-100 rounded text-xs"
             >
-              <td class="p-2 pl-6">{{ resultIndex + 1 }}</td>
-              <td class="p-2">{{ getHorseName(result.horseId) }}</td>
+              <td class="p-2 pl-6">{{ position.position }}</td>
+              <td class="p-2">{{ getHorseName(position.horseId) }}</td>
             </tr>
           </tbody>
         </table>
@@ -50,37 +50,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import { useStore } from 'vuex'
-import { computed } from 'vue'
+<script>
+import { mapState } from 'vuex'
 
-export default defineComponent({
-  setup() {
-    const store = useStore()
-
-    const races = computed(() => store.state.races)
-    const horses = computed(() => store.state.horses)
-    const results = computed(() => store.state.results)
-
-    const getRaceResults = (raceId: number) => {
-      return results.value
-        .filter((result) => result.raceId === raceId)
-        .sort((a, b) => a.position - b.position)
-    }
-
-    const getHorseName = (horseId: number) => {
-      const horse = horses.value.find((h) => h.id === horseId)
-      return horse ? horse.name : 'Unknown Horse'
-    }
-
-    return {
-      races,
-      getRaceResults,
-      getHorseName
+export default {
+  name: 'RaceInfo',
+  computed: {
+    ...mapState(['races', 'horses', 'results'])
+  },
+  methods: {
+    getRaceResults(raceId) {
+      const raceResult = this.results.find((result) => result.raceId === raceId)
+      return raceResult ? raceResult.positions.sort((a, b) => a.position - b.position) : []
+    },
+    getHorseName(horseId) {
+      const horse = this.horses.find((h) => h.id === Number(horseId))
+      return horse ? horse.name + ' => ' + horse.condition : 'Unknown Horse'
     }
   }
-})
+}
 </script>
 
 <style lang="scss" scoped></style>

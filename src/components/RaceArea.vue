@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import IconHorse from './icons/IconHorse.vue'
 
 export default defineComponent({
@@ -49,7 +49,8 @@ export default defineComponent({
   data() {
     return {
       trackWidth: 400,
-      racePositions: {} as { [key: number]: number }
+      racePositions: {} as { [key: number]: number },
+      finishers: [] as number[]
     }
   },
   computed: {
@@ -74,7 +75,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations(['setIsRacing', 'addResult']),
+    ...mapMutations(['setIsRacing', 'addResult', 'nextRace', 'setProgramStarted']),
 
     startRace() {
       this.racePositions = {}
@@ -88,14 +89,25 @@ export default defineComponent({
       if (!this.isRacing) return
 
       let allFinished = true
+      let finishersInThisFrame = []
       this.currentRace.participants.forEach((horse) => {
-        if (this.racePositions[horse.id] < this.currentRace.distance) {
-          const speedReduction = Math.max(0, (100 - horse.condition) / 100) * 0.1
-          const speed = Math.random() * 10 + 5 // Random speed between 5 and 15
-          this.racePositions[horse.id] += speed * (1 - speedReduction)
+        if (this.racePositions[horse.id] + horse.condition < this.currentRace.distance) {
+          this.racePositions[horse.id] += horse.condition
           allFinished = false
+          return
+        } else {
+          this.racePositions[horse.id] = this.currentRace.distance
+          if (!this.finishers.includes(horse.id)) {
+            finishersInThisFrame.push(horse)
+          }
         }
       })
+
+      finishersInThisFrame.sort((a, b) => {
+        return b.condition - a.condition
+      })
+
+      this.finishers = [...this.finishers, ...finishersInThisFrame.map((horse) => horse.id)]
 
       if (allFinished) {
         this.finishRace()
@@ -105,15 +117,36 @@ export default defineComponent({
     },
 
     finishRace() {
-      const sortedHorses = Object.entries(this.racePositions)
-        .sort(([, a], [, b]) => b - a)
-        .map(([id]) => parseInt(id))
-
       this.addResult({
         raceId: this.currentRaceId,
-        positions: sortedHorses.map((horseId, index) => ({ horseId, position: index + 1 }))
+        positions: this.finishers.map((horseId, index) => ({
+          horseId,
+          position: index + 1
+        }))
       })
-      // this.setIsRacing(false)
+
+      if (this.currentRaceId === 6) {
+        this.setIsRacing(false)
+        this.setProgramStarted(false)
+        return
+      }
+
+      this.finishers = []
+      this.racePositions = {}
+      this.currentRace.participants.forEach((horse) => {
+        this.racePositions[horse.id] = 0
+      })
+
+      this.resetAllRacePositions()
+      this.nextRace()
+
+      if (!this.currentRaceId) {
+        this.setIsRacing(false)
+        this.programStarted = false
+        return
+      }
+
+      this.startRace()
     },
 
     getHorsePosition(horse: { id: number }) {
@@ -125,6 +158,12 @@ export default defineComponent({
     getHorseName(horseId: number) {
       const horse = this.horses.find((h) => h.id === horseId)
       return horse ? horse.name : 'Unknown'
+    },
+
+    resetAllRacePositions() {
+      this.currentRace.participants.forEach((horse) => {
+        this.racePositions[horse.id] = 0
+      })
     }
   }
 })

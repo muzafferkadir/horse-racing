@@ -86,7 +86,20 @@ const store = createStore<State>({
 
     setProgramStarted(state, programStarted: boolean) {
       state.programStarted = programStarted;
-    }
+    },
+
+    nextRace(state) {
+      const currentRace = state.races.find((race: Race) => race.id === state.currentRaceId);
+      const isNextRaceExists = state.races.some((race: Race) => race.id === (state.currentRaceId ?? 0) + 1);
+
+      state.isRacing = false;
+      if (currentRace && isNextRaceExists && state.currentRaceId !== null) {
+        state.currentRaceId = state.currentRaceId + 1;
+      } else {
+        state.currentRaceId = null;
+      }
+      state.isRacing = true;
+    },
   },
   actions: {
     initializeHorses({ commit }) {
