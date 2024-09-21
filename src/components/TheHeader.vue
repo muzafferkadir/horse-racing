@@ -14,6 +14,7 @@
           @click="toggleRacing"
           :disabled="!isGenerated || isProgramFinished"
           class="py-3 px-6 rounded-md border border-primary-500 bg-primary-500 text-white font-semibold"
+          :class="{ 'cursor-not-allowed': !isGenerated || isProgramFinished }"
         >
           {{ isRacing ? 'STOP' : 'START' }}
         </button>
@@ -25,7 +26,7 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
-import Logo from './Logo.vue'
+import Logo from './TheLogo.vue'
 
 export default defineComponent({
   components: {

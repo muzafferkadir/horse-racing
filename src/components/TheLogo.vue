@@ -64,7 +64,9 @@
 </template>
 
 <script>
-export default {}
+export default defineComponent({
+  name: 'TheLogo'
+})
 </script>
 
 <style lang="scss" scoped></style>

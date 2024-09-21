@@ -1,23 +1,5 @@
 import { createStore } from 'vuex';
-
-interface Horse {
-  id: number;
-  color: string;
-  condition: number;
-  name: string;
-}
-
-interface Race {
-  id: number;
-  name: string;
-  distance: number;
-  participants: Horse[];
-}
-
-interface RaceResult {
-  raceId: number;
-  positions: { horseId: number; position: number }[];
-}
+import type { Horse, Race, RaceResult } from '../../types/types';
 
 interface State {
   horses: Horse[];
