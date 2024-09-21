@@ -1,20 +1,32 @@
 <template>
   <div>
-    <div v-for="(run, index) in raceSchedule" :key="index" class="mb-2">
+    <div v-for="(race, index) in races" :key="race.id" class="mb-2">
       <span class="font-semibold">Run {{ index + 1 }}:</span>
-      {{ run.distance }}m - Horses: {{ run.horses.join(', ') }}
+      {{ race.distance }}m - Horses: {{ getHorseNames(race.participants) }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { mapState } from 'vuex'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
+import type { State, Race, Horse } from '../../types/types'
 
 export default defineComponent({
   name: 'RaceSchedule',
-  computed: {
-    ...mapState(['raceSchedule'])
+  setup() {
+    const store = useStore<State>()
+
+    const races = computed((): Race[] => store.state.races)
+
+    const getHorseNames = (horses: Horse[]): string => {
+      return horses.map((horse) => horse.name).join(', ')
+    }
+
+    return {
+      races,
+      getHorseNames
+    }
   }
 })
 </script>

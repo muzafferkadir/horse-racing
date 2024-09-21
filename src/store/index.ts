@@ -1,30 +1,19 @@
-import { createStore } from 'vuex';
-import type { Horse, Race, RaceResult } from '../../types/types';
+import { createStore, Store } from 'vuex';
+import type { State, Horse, Race, RaceResult } from '../../types/types';
 
-interface State {
-  horses: Horse[];
-  races: Race[];
-  results: RaceResult[];
-  isRacing: boolean;
-  currentRaceId: number | null;
-  isGenerated: boolean;
-  programStarted: boolean;
-  programFinished: boolean;
-}
-
-const horseNames = [
+const horseNames: string[] = [
   'Gülbatur', 'Şahbatur', 'Kırlangıç', 'Alkaranlık', 'Doru', 'Bozkır', 'Yıldırım', 'Demirkır', 'Şahmeran',
   'Ateşkanat', 'Karabey', 'Yekta', 'Aygırhan', 'Taykut', 'Akıncı', 'Kasırga', 'Şahruh', 'Hanbatur', 'Turan', 'Berksoy'
 ];
 
-const horseColors = [
+const horseColors: string[] = [
   '#160404', '#2a2a2a', '#5d3a37', '#4d4d4d', '#570C00', '#979797', '#751700', '#836969', '#942700', '#A33100',
   '#B33B00', '#c27b00', '#D15400', '#76541e', '#F07000', '#dcbf1e', '#cac7c3', '#efe55e', '#FFAB2E', '#ffa304'
 ];
 
-const raceLengths = [1200, 1400, 1600, 1800, 2000, 2200];
+const raceLengths: number[] = [1200, 1400, 1600, 1800, 2000, 2200];
 
-const store = createStore<State>({
+const store: Store<State> = createStore<State>({
   state: {
     horses: [],
     races: [],
@@ -36,47 +25,47 @@ const store = createStore<State>({
     programFinished: false,
   },
   mutations: {
-    setHorses(state, horses: Horse[]) {
+    setHorses(state: State, horses: Horse[]): void {
       state.horses = horses;
     },
 
-    setRaces(state, races: Race[]) {
+    setRaces(state: State, races: Race[]): void {
       state.races = races;
     },
 
-    addRace(state, race: Race) {
+    addRace(state: State, race: Race): void {
       state.races.push(race);
     },
 
-    setIsRacing(state, isRacing: boolean) {
+    setIsRacing(state: State, isRacing: boolean): void {
       state.isRacing = isRacing;
     },
 
-    setCurrentRaceId(state, raceId: number | null) {
+    setCurrentRaceId(state: State, raceId: number | null): void {
       state.currentRaceId = raceId;
     },
 
-    addResult(state, result: RaceResult) {
+    addResult(state: State, result: RaceResult): void {
       state.results.push(result);
     },
 
-    setResults(state, results: RaceResult[]) {
+    setResults(state: State, results: RaceResult[]): void {
       state.results = results;
     },
 
-    setIsGenerated(state, isGenerated: boolean) {
+    setIsGenerated(state: State, isGenerated: boolean): void {
       state.isGenerated = isGenerated;
     },
 
-    setProgramStarted(state, programStarted: boolean) {
+    setProgramStarted(state: State, programStarted: boolean): void {
       state.programStarted = programStarted;
     },
 
-    setProgramFinished(state, programFinished: boolean) {
+    setProgramFinished(state: State, programFinished: boolean): void {
       state.programFinished = programFinished;
     },
 
-    nextRace(state) {
+    nextRace(state: State): void {
       const currentRace = state.races.find((race: Race) => race.id === state.currentRaceId);
       const isNextRaceExists = state.races.some((race: Race) => race.id === (state.currentRaceId ?? 0) + 1);
 
@@ -90,7 +79,7 @@ const store = createStore<State>({
     },
   },
   actions: {
-    initializeHorses({ commit }) {
+    initializeHorses({ commit }): void {
       const shuffledNames = [...horseNames].sort(() => 0.5 - Math.random());
       const shuffledColors = [...horseColors].sort(() => 0.5 - Math.random());
 
@@ -103,7 +92,7 @@ const store = createStore<State>({
       commit('setHorses', horses);
     },
 
-    generateProgram({ dispatch, commit, state }) {
+    generateProgram({ dispatch, commit, state }): void {
       commit('setRaces', []);
       commit('setResults', []);
       commit('setIsRacing', false);
@@ -120,7 +109,7 @@ const store = createStore<State>({
           .sort(() => 0.5 - Math.random())
           .slice(0, 10);
 
-        const race = {
+        const race: Race = {
           id: state.races.length + 1,
           name: raceName,
           distance: raceDistance,
@@ -136,7 +125,7 @@ const store = createStore<State>({
       }
     },
 
-    startProgram({ commit, state }) {
+    startProgram({ commit, state }): void {
       if (!state.isGenerated) {
         return;
       }
@@ -150,15 +139,15 @@ const store = createStore<State>({
     },
   },
   getters: {
-    getHorseById: (state) => (id: number) => {
+    getHorseById: (state: State) => (id: number): Horse | undefined => {
       return state.horses.find(horse => horse.id === id);
     },
 
-    getRaceById: (state) => (id: number) => {
+    getRaceById: (state: State) => (id: number): Race | undefined => {
       return state.races.find(race => race.id === id);
     },
 
-    getResultByRaceId: (state) => (raceId: number) => {
+    getResultByRaceId: (state: State) => (raceId: number): RaceResult | undefined => {
       return state.results.find(result => result.raceId === raceId);
     },
   },

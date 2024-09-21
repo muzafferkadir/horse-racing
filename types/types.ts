@@ -1,3 +1,14 @@
+export interface State {
+  horses: Horse[];
+  races: Race[];
+  results: RaceResult[];
+  isRacing: boolean;
+  currentRaceId: number | null;
+  isGenerated: boolean;
+  programStarted: boolean;
+  programFinished: boolean;
+}
+
 export interface Horse {
   id: number;
   color: string;
@@ -12,7 +23,12 @@ export interface Race {
   participants: Horse[];
 }
 
+export interface Position {
+  horseId: number
+  position: number
+}
+
 export interface RaceResult {
-  raceId: number;
-  positions: { horseId: number; position: number }[];
+  raceId: number
+  positions: Position[]
 }

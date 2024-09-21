@@ -26,20 +26,22 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
+import type { State } from '../../types/types'
 import Logo from './TheLogo.vue'
 
 export default defineComponent({
+  name: 'TheHeader',
   components: {
     Logo
   },
   setup() {
-    const store = useStore()
+    const store = useStore<State>()
 
-    const generateProgram = () => {
+    const generateProgram = (): void => {
       store.dispatch('generateProgram')
     }
 
-    const toggleRacing = () => {
+    const toggleRacing = (): void => {
       if (!store.state.programStarted) {
         store.dispatch('startProgram')
         return
@@ -51,9 +53,9 @@ export default defineComponent({
     return {
       generateProgram,
       toggleRacing,
-      isRacing: computed(() => store.state.isRacing),
-      isGenerated: computed(() => store.state.isGenerated),
-      isProgramFinished: computed(() => store.state.programFinished)
+      isRacing: computed((): boolean => store.state.isRacing),
+      isGenerated: computed((): boolean => store.state.isGenerated),
+      isProgramFinished: computed((): boolean => store.state.programFinished)
     }
   }
 })

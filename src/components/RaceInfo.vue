@@ -50,25 +50,29 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { mapState } from 'vuex'
+import type { Horse, Position, RaceResult } from '../../types/types'
 
-export default {
+export default defineComponent({
   name: 'RaceInfo',
   computed: {
     ...mapState(['races', 'horses', 'results'])
   },
   methods: {
-    getRaceResults(raceId) {
-      const raceResult = this.results.find((result) => result.raceId === raceId)
-      return raceResult ? raceResult.positions.sort((a, b) => a.position - b.position) : []
+    getRaceResults(raceId: number): Position[] {
+      const raceResult = (this.results as RaceResult[]).find((result) => result.raceId === raceId)
+      return raceResult
+        ? raceResult.positions.sort((a: Position, b: Position) => a.position - b.position)
+        : []
     },
-    getHorseName(horseId) {
-      const horse = this.horses.find((h) => h.id === Number(horseId))
-      return horse ? horse.name + ' => ' + horse.condition : 'Unknown Horse'
+    getHorseName(horseId: number): string {
+      const horse = (this.horses as Horse[]).find((h) => h.id === Number(horseId))
+      return horse ? `${horse.name} => ${horse.condition}` : 'Unknown Horse'
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped></style>
