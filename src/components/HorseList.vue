@@ -10,10 +10,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="horse in 20" class="border-b border-gray-100 rounded text-xs">
-          <td class="p-2 pl-6">Horse 1</td>
-          <td class="p-2">Good</td>
-          <td class="p-2">Brown</td>
+        <tr
+          v-for="horse in horses"
+          :key="horse.id"
+          class="border-b border-gray-100 rounded text-xs"
+        >
+          <td class="p-2 pl-6">{{ horse.name }}</td>
+          <td class="p-2">{{ horse.condition }}</td>
+          <td class="p-2">
+            <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: horse.color }"></div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -21,7 +27,20 @@
 </template>
 
 <script lang="ts">
-export default {}
+import { defineComponent } from 'vue'
+import { useStore } from 'vuex'
+import { computed } from 'vue'
+
+export default defineComponent({
+  setup() {
+    const store = useStore()
+    const horses = computed(() => store.state.horses)
+
+    return {
+      horses
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped></style>
