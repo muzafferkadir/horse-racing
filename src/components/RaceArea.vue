@@ -75,7 +75,13 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations(['setIsRacing', 'addResult', 'nextRace', 'setProgramStarted']),
+    ...mapMutations([
+      'setIsRacing',
+      'addResult',
+      'nextRace',
+      'setProgramStarted',
+      'setProgramFinished'
+    ]),
 
     startRace() {
       this.racePositions = {}
@@ -125,17 +131,18 @@ export default defineComponent({
         }))
       })
 
-      if (this.currentRaceId === 6) {
-        this.setIsRacing(false)
-        this.setProgramStarted(false)
-        return
-      }
-
       this.finishers = []
       this.racePositions = {}
       this.currentRace.participants.forEach((horse) => {
         this.racePositions[horse.id] = 0
       })
+
+      if (this.currentRaceId === 6) {
+        this.setIsRacing(false)
+        this.setProgramStarted(false)
+        this.setProgramFinished(true)
+        return
+      }
 
       this.resetAllRacePositions()
       this.nextRace()

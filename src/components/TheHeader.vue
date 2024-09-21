@@ -5,13 +5,14 @@
       <div class="flex items-center gap-4">
         <button
           @click="generateProgram"
+          :disabled="isRacing"
           class="py-3 px-6 rounded-md border border-primary-500 bg-transparent text-primary-500 font-semibold"
         >
           GENERATE PROGRAM
         </button>
         <button
           @click="toggleRacing"
-          :disabled="!isGenerated"
+          :disabled="!isGenerated || isProgramFinished"
           class="py-3 px-6 rounded-md border border-primary-500 bg-primary-500 text-white font-semibold"
         >
           {{ isRacing ? 'STOP' : 'START' }}
@@ -50,7 +51,8 @@ export default defineComponent({
       generateProgram,
       toggleRacing,
       isRacing: computed(() => store.state.isRacing),
-      isGenerated: computed(() => store.state.isGenerated)
+      isGenerated: computed(() => store.state.isGenerated),
+      isProgramFinished: computed(() => store.state.programFinished)
     }
   }
 })

@@ -27,6 +27,7 @@ interface State {
   currentRaceId: number | null;
   isGenerated: boolean;
   programStarted: boolean;
+  programFinished: boolean;
 }
 
 const horseNames = [
@@ -50,6 +51,7 @@ const store = createStore<State>({
     currentRaceId: null,
     isGenerated: false,
     programStarted: false,
+    programFinished: false,
   },
   mutations: {
     setHorses(state, horses: Horse[]) {
@@ -88,6 +90,10 @@ const store = createStore<State>({
       state.programStarted = programStarted;
     },
 
+    setProgramFinished(state, programFinished: boolean) {
+      state.programFinished = programFinished;
+    },
+
     nextRace(state) {
       const currentRace = state.races.find((race: Race) => race.id === state.currentRaceId);
       const isNextRaceExists = state.races.some((race: Race) => race.id === (state.currentRaceId ?? 0) + 1);
@@ -121,6 +127,7 @@ const store = createStore<State>({
       commit('setIsRacing', false);
       commit('setCurrentRaceId', null);
       commit('setProgramStarted', false);
+      commit('setProgramFinished', false);
 
       dispatch('initializeHorses');
 
