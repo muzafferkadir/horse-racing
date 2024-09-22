@@ -1,15 +1,15 @@
 <template>
   <div class="flex-1">
     <div class="grid grid-cols-2 gap-2 mb-2">
-      <div class="bg-gray-100 rounded px-6 py-3 text-lg font-semibold">PROGRAM</div>
-      <div class="bg-gray-100 rounded px-6 py-3 text-lg font-semibold">RESULTS</div>
+      <div class="title-program bg-gray-100 rounded px-6 py-3 text-lg font-semibold">PROGRAM</div>
+      <div class="title-results bg-gray-100 rounded px-6 py-3 text-lg font-semibold">RESULTS</div>
     </div>
-    <div :key="index" v-for="(race, index) in races" class="mb-5">
-      <div class="bg-gray-100 rounded px-6 py-2 font-semibold text-center">
+    <div :key="index" v-for="(race, index) in races" class="races mb-5">
+      <div class="title-race bg-gray-100 rounded px-6 py-2 font-semibold text-center">
         RACE {{ index + 1 }} ({{ race.distance }}M)
       </div>
       <div class="grid grid-cols-2 gap-2">
-        <table class="w-full mt-2">
+        <table class="program-table w-full mt-2">
           <thead class="bg-gray-100 rounded">
             <tr>
               <th class="p-2 pl-6 text-left text-xs font-semibold">POSITION</th>
@@ -28,7 +28,7 @@
           </tbody>
         </table>
         <table class="w-full mt-2">
-          <thead class="bg-gray-100 rounded">
+          <thead class="result-table bg-gray-100 rounded">
             <tr>
               <th class="p-2 pl-6 text-left text-xs font-semibold">POSITION</th>
               <th class="p-2 text-left text-xs font-semibold">NAME</th>

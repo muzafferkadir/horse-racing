@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-[275px] max-h-max flex-1 sticky top-5">
-    <div class="bg-gray-100 rounded px-6 py-3 text-lg font-semibold">HORSE LIST (1-20)</div>
+    <div class="title bg-gray-100 rounded px-6 py-3 text-lg font-semibold">HORSE LIST (1-20)</div>
     <table class="w-full mt-2">
       <thead class="bg-gray-100 rounded">
         <tr>
@@ -34,7 +34,7 @@ export default defineComponent({
   name: 'HorseList',
   setup() {
     const store = useStore()
-    const horses = computed<Horse[]>(() => store.state.horses)
+    const horses = computed<Horse[]>(() => store.state.horses || [])
 
     return {
       horses
