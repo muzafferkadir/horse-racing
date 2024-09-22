@@ -69,7 +69,7 @@ export default defineComponent({
     },
     getHorseName(horseId: number): string {
       const horse = (this.horses as Horse[]).find((h) => h.id === Number(horseId))
-      return horse ? `${horse.name} => ${horse.condition}` : 'Unknown Horse'
+      return horse ? `${horse.name}` : 'Unknown Horse'
     }
   }
 })

@@ -1,6 +1,8 @@
 <template>
-  <header class="h-[112px] bg-white border-b border-gray-100">
-    <div class="container mx-auto flex items-center justify-between h-full">
+  <header class="bg-white border-b border-gray-100 py-8 px-12 lg:px-20">
+    <div
+      class="container mx-auto flex flex-wrap items-center justify-center gap-8 lg:justify-between h-full"
+    >
       <Logo />
       <div class="flex items-center gap-4">
         <button
