@@ -78,6 +78,13 @@ export default defineComponent({
       }
     )
 
+    watch(
+      () => store.state.programStarted,
+      () => {
+        racePositions.value = {}
+      }
+    )
+
     const startRace = () => {
       racePositions.value = {}
       currentRace.value.participants.forEach((horse) => {
@@ -93,7 +100,9 @@ export default defineComponent({
       let finishersInThisFrame: Horse[] = []
       currentRace.value.participants.forEach((horse) => {
         if (racePositions.value[horse.id] + horse.condition < currentRace.value.distance) {
-          racePositions.value[horse.id] += horse.condition
+          const animationSpeed = 100
+          racePositions.value[horse.id] +=
+            horse.condition / (currentRace.value.distance / animationSpeed)
           allFinished = false
           return
         } else {
