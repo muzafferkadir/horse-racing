@@ -8,6 +8,7 @@
         <button
           @click="generateProgram"
           :disabled="isRacing"
+          id="generate-program-button"
           class="py-3 px-6 rounded-md border border-primary-500 bg-transparent text-primary-500 font-semibold"
         >
           GENERATE PROGRAM
@@ -15,6 +16,7 @@
         <button
           @click="toggleRacing"
           :disabled="!isGenerated || isProgramFinished"
+          id="start-race-button"
           class="py-3 px-6 rounded-md border border-primary-500 bg-primary-500 text-white font-semibold"
           :class="{ 'cursor-not-allowed': !isGenerated || isProgramFinished }"
         >
