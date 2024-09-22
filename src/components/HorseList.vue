@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-[275px] max-h-max flex-1 sticky top-5">
     <div class="title bg-gray-100 rounded px-6 py-3 text-lg font-semibold">HORSE LIST (1-20)</div>
-    <table class="w-full mt-2">
+    <table class="w-full mt-2" v-if="horses.length > 0">
       <thead class="bg-gray-100 rounded">
         <tr>
           <th class="p-2 pl-6 text-left text-xs font-semibold">NAME</th>
@@ -23,6 +23,9 @@
         </tr>
       </tbody>
     </table>
+    <div class="text-gray-500 mt-2" v-else>
+      There are no horses in the race. Please generate program first.
+    </div>
   </div>
 </template>
 <script lang="ts">
