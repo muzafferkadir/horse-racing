@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import RaceArea from '@/components/RaceArea.vue';
 import { describe, it, expect, vi } from 'vitest';
 import { createStore } from 'vuex';
+import { calculateNewPosition } from '@/components/RaceArea.vue';
 
 vi.mock('@/components/icons/IconHorse.vue', () => ({
   default: {
@@ -145,7 +146,9 @@ describe('TheRace.vue', () => {
     expect(wrapper.vm.currentRace.participants[1].condition).toBe(90);
 
     // expect racePositions to be an object with keys 1 and 2
-    expect(wrapper.vm.racePositions).toEqual({ '1': 10, '2': 9 });
+    const horse1Position = calculateNewPosition(0, 100, 1000);
+    const horse2Position = calculateNewPosition(0, 90, 1000);
+    expect(wrapper.vm.racePositions).toEqual({ '1': horse1Position, '2': horse2Position });
 
     // wait to finish the race
     await new Promise((resolve) => setTimeout(resolve, 3000));

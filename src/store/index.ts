@@ -87,7 +87,7 @@ const store: Store<State> = createStore<State>({
         id: index + 1,
         name,
         color: shuffledColors[index],
-        condition: Math.floor(Math.random() * 21) + 80,
+        condition: Math.floor(Math.random() * 100) + 1,
       }));
       commit('setHorses', horses);
     },

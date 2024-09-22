@@ -43,6 +43,16 @@ import { useStore } from 'vuex'
 import IconHorse from './icons/IconHorse.vue'
 import type { State, Horse, Race, RaceResult } from '../../types/types'
 
+export const calculateNewPosition = (
+  oldPosition: number,
+  condition: number,
+  totalDistance: number
+): number => {
+  const animationSpeed = 100
+  const newPosition = oldPosition + (80 + condition * 0.2) / (totalDistance / animationSpeed)
+  return newPosition
+}
+
 export default defineComponent({
   components: {
     IconHorse
@@ -98,16 +108,6 @@ export default defineComponent({
 
       let allFinished = true
       let finishersInThisFrame: Horse[] = []
-
-      const calculateNewPosition = (
-        oldPosition: number,
-        condition: number,
-        totalDistance: number
-      ): number => {
-        const animationSpeed = 100
-        const newPosition = oldPosition + condition / (totalDistance / animationSpeed)
-        return newPosition
-      }
 
       currentRace.value.participants.forEach((horse) => {
         const newPosition = calculateNewPosition(
