@@ -8,16 +8,16 @@
         <div
           v-for="(horse, index) in currentRace.participants"
           :key="horse.id"
-          class="flex items-center w-full h-12 border border-t border-dashed border-gray-200"
+          class="horse flex items-center w-full h-12 border border-t border-dashed border-gray-200"
         >
           <div
-            class="w-16 h-full bg-gray-100 flex items-center justify-center font-semibold text-lg"
+            class="horse-id w-16 h-full bg-gray-100 flex items-center justify-center font-semibold text-lg"
           >
             {{ index + 1 }}
           </div>
           <div class="flex-1 relative h-full">
             <div
-              class="absolute top-1/2 -translate-y-1/2 flex items-center"
+              class="horse-sprite absolute top-1/2 -translate-y-1/2 flex items-center"
               :style="{ transform: `translateX(${getHorsePosition(horse)}px)`, color: horse.color }"
             >
               <IconHorse :color="horse.color" />
@@ -29,7 +29,7 @@
         v-if="currentRace?.participants?.length"
         class="flex rounded-md justify-center bg-gray-100"
       >
-        <div class="py-3 px-6 text-sm font-semibold">
+        <div class="race-title py-3 px-6 text-sm font-semibold">
           {{ currentRace.name }} ({{ currentRace.distance }}M)
         </div>
       </div>
@@ -98,15 +98,31 @@ export default defineComponent({
 
       let allFinished = true
       let finishersInThisFrame: Horse[] = []
+
+      const calculateNewPosition = (
+        oldPosition: number,
+        condition: number,
+        totalDistance: number
+      ): number => {
+        const animationSpeed = 100
+        const newPosition = oldPosition + condition / (totalDistance / animationSpeed)
+        return newPosition
+      }
+
       currentRace.value.participants.forEach((horse) => {
-        if (racePositions.value[horse.id] + horse.condition < currentRace.value.distance) {
-          const animationSpeed = 100
-          racePositions.value[horse.id] +=
-            horse.condition / (currentRace.value.distance / animationSpeed)
+        const newPosition = calculateNewPosition(
+          racePositions.value[horse.id],
+          horse.condition,
+          currentRace.value.distance
+        )
+
+        if (newPosition < currentRace.value.distance) {
+          racePositions.value[horse.id] = newPosition
           allFinished = false
           return
         } else {
           racePositions.value[horse.id] = currentRace.value.distance
+
           if (!finishers.value.includes(horse.id)) {
             finishersInThisFrame.push(horse)
           }
@@ -124,7 +140,7 @@ export default defineComponent({
       }
     }
 
-    const finishRace = () => {
+    const finishRace = async () => {
       store.commit('addResult', {
         raceId: store.state.currentRaceId,
         positions: finishers.value.map((horseId, index) => ({
@@ -139,7 +155,7 @@ export default defineComponent({
         racePositions.value[horse.id] = 0
       })
 
-      if (store.state.currentRaceId === 6) {
+      if (store.state.currentRaceId === store.state.races.length) {
         store.commit('setIsRacing', false)
         store.commit('setProgramStarted', false)
         store.commit('setProgramFinished', true)
@@ -177,7 +193,8 @@ export default defineComponent({
       currentRace,
       raceResults,
       getHorsePosition,
-      getHorseName
+      getHorseName,
+      racePositions
     }
   }
 })
